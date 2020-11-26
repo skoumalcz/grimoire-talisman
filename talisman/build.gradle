@@ -1,0 +1,11 @@
+plugins {
+    id 'project.build'
+}
+
+dependencies {
+
+    debugImplementation(project(":talisman-seal"))
+
+    releaseImplementation("com.skoumal.grimoire:talisman-seal:${publicationVersionName}")
+
+}

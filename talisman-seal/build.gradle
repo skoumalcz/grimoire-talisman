@@ -1,0 +1,12 @@
+plugins {
+    id 'project.build'
+}
+
+android {
+    kotlinOptions {
+        freeCompilerArgs = ["-Xinline-classes"]
+    }
+}
+
+dependencies {
+}

@@ -1,0 +1,35 @@
+buildscript {
+
+    ext {
+        /* kotlin */
+        kotlinVersion = "1.4.20"
+        coroutinesVersion = "1.4.1"
+
+        /* build tools */
+        bintrayVersion = ""
+        buildVersion = "4.1.1"
+
+        /* tests */
+        jUnitVersion = "4.13.1"
+        jUnitAndroidXVersion = "1.1.2"
+        truthVersion = "1.0"
+        mockitoVersion = "3.6.0"
+    }
+
+    repositories {
+        google()
+        jcenter()
+    }
+
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
