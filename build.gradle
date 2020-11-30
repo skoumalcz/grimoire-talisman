@@ -6,7 +6,7 @@ buildscript {
         coroutinesVersion = "1.4.1"
 
         /* build tools */
-        bintrayVersion = ""
+        bintrayVersion = "1.8.5"
         buildVersion = "4.1.1"
 
         /* tests */

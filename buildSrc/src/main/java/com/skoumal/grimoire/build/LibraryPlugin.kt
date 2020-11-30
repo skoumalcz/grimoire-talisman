@@ -1,20 +1,34 @@
 package com.skoumal.grimoire.build
 
+import com.skoumal.grimoire.cover.android.AndroidLibraryFactory
+import com.skoumal.grimoire.cover.android.applyJavaVersion
+import com.skoumal.grimoire.cover.gradle.parentExtra
+import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.provideDelegate
 
 class LibraryPlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
-        val options = LibraryFactory(target)
-            .applyLibrary()
+        val kotlinVersion: String by target.parentExtra
+        val coroutinesVersion: String by target.parentExtra
+
+        val options = AndroidLibraryFactory(target)
+            .applyAndroid()
             .applyKotlin()
             .applyPublishing()
+            .applyKotlinDependencies(kotlinVersion)
+            .applyCoroutineDependencies(coroutinesVersion)
+            .applyTestDependencies()
+            .applyAndroidTestDependencies()
+            .applyCoroutinesTestDependencies(coroutinesVersion)
             .build()
 
         options
             .setTargetSdk(30)
             .setMinSdk(21)
+            .applyJavaVersion(JavaVersion.VERSION_1_8)
 
         target.afterEvaluate {
             LibraryPublishing(target)
