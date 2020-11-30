@@ -16,9 +16,11 @@ class LibraryPlugin : Plugin<Project> {
             .setTargetSdk(30)
             .setMinSdk(21)
 
-        LibraryPublishing(target)
-            .applyPublication()
-            .applyBintrayOnPublication()
+        target.afterEvaluate {
+            LibraryPublishing(target)
+                .applyPublication()
+                .applyBintrayOnPublication()
+        }
     }
 
 }

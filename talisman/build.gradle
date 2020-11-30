@@ -10,8 +10,6 @@ android {
 
 dependencies {
 
-    debugImplementation(project(":talisman-seal"))
-
-    releaseImplementation("com.skoumal.grimoire:talisman-seal:${getProperty("version")}")
+    implementation(project(":talisman-seal"))
 
 }
