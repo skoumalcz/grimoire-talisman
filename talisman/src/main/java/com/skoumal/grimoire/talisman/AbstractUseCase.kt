@@ -61,7 +61,7 @@ abstract class AbstractUseCase<In, Out> : UseCase<In, Out> {
         }
     }
 
-    private val channel = getDefaultChannel()
+    private val channel = Vessel<Out>(Channel.CONFLATED)
 
     /**
      * By default, observe outputs an internal channel with up to one previous value. Channel is
@@ -77,8 +77,6 @@ abstract class AbstractUseCase<In, Out> : UseCase<In, Out> {
     override fun observe(input: In): Flow<Out> {
         return channel.dock()
     }
-
-    private fun getDefaultChannel() = Vessel<Out>(Channel.CONFLATED)
 
     /**
      * On any failure that [backing] or [run] has produced runs [Seal.onFailure] method to check
