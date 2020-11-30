@@ -5,7 +5,6 @@ import com.skoumal.grimoire.talisman.seal.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 
@@ -53,7 +52,7 @@ abstract class AbstractUseCase<In, Out> : UseCase<In, Out> {
      * */
     final override suspend fun invoke(input: In): Seal<Out> {
         return backing.transform(input).onFailureLog().onSuccess {
-            if (!channel.offer(it)) {
+            if (!channel.sail(it)) {
                 logInternal(
                     this@AbstractUseCase::class.java.simpleName,
                     "[ERROR] - internal use-case's channel cannot accept any values"
@@ -76,10 +75,10 @@ abstract class AbstractUseCase<In, Out> : UseCase<In, Out> {
      * or entirely different approach - such as repeated polling of an endpoint and such.
      * */
     override fun observe(input: In): Flow<Out> {
-        return channel.consumeAsFlow()
+        return channel.dock()
     }
 
-    private fun getDefaultChannel() = Channel<Out>(Channel.CONFLATED)
+    private fun getDefaultChannel() = Vessel<Out>(Channel.CONFLATED)
 
     /**
      * On any failure that [backing] or [run] has produced runs [Seal.onFailure] method to check
