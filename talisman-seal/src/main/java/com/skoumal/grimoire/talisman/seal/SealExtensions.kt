@@ -23,7 +23,7 @@ inline fun <T, R : Any?> T.letSealed(body: (T) -> R): Seal<R> = try {
  * Returns value stored in [Seal] only if it's a success, otherwise throws the exception stored
  * within according to [throwableOrThrow].
  * */
-inline fun <reified T> Seal<T>.getOrThrow(): T {
+inline fun <T> Seal<T>.getOrThrow(): T {
     return when {
         isSuccess -> getOrNull() as T
         else -> throw throwableOrThrow()
@@ -50,7 +50,7 @@ fun <T> Seal<T>.throwableOrThrow(): Throwable {
  * In a case this [Seal] is not a success, the seal is cast to the new output [O] and therefore
  * this operation is considered free.
  * */
-inline fun <reified I, O> Seal<I>.map(body: (I) -> O): Seal<O> {
+inline fun <I, O> Seal<I>.map(body: (I) -> O): Seal<O> {
     @Suppress("UNCHECKED_CAST")
     return when {
         isSuccess -> Seal.success(body(getOrThrow()))
@@ -64,7 +64,7 @@ inline fun <reified I, O> Seal<I>.map(body: (I) -> O): Seal<O> {
  *
  * @see map
  * */
-inline fun <reified I, O> Seal<I>.mapSealed(body: (I) -> O): Seal<O> {
+inline fun <I, O> Seal<I>.mapSealed(body: (I) -> O): Seal<O> {
     @Suppress("UNCHECKED_CAST")
     return when {
         isSuccess -> runSealed { body(getOrThrow()) }
@@ -79,7 +79,7 @@ inline fun <reified I, O> Seal<I>.mapSealed(body: (I) -> O): Seal<O> {
  *
  * Exceptions thrown while performing the [body] are not caught and propagate upstream immediately.
  * */
-inline fun <reified I, O> Seal<I>.flatMap(body: (I) -> Seal<O>): Seal<O> {
+inline fun <I, O> Seal<I>.flatMap(body: (I) -> Seal<O>): Seal<O> {
     @Suppress("UNCHECKED_CAST")
     return when {
         isSuccess -> body(getOrThrow())
@@ -91,7 +91,7 @@ inline fun <reified I, O> Seal<I>.flatMap(body: (I) -> Seal<O>): Seal<O> {
  * In functionality similar to [flatMap] however catches any exceptions that occur when executing
  * [body].
  * */
-inline fun <reified I, reified O> Seal<I>.flatMapSealed(body: (I) -> Seal<O>): Seal<O> {
+inline fun <I, O> Seal<I>.flatMapSealed(body: (I) -> Seal<O>): Seal<O> {
     @Suppress("UNCHECKED_CAST")
     return when {
         isSuccess -> runSealed { flatMap(body).getOrThrow() }
@@ -129,7 +129,7 @@ inline fun <I, O> Seal<Iterable<I>>.listMapSealed(body: (I) -> O): Seal<Iterable
  * provided functions will be called at runtime depending on whether the [Seal] is a success or
  * not.
  * */
-inline fun <reified I, O> Seal<I>.fold(
+inline fun <I, O> Seal<I>.fold(
     onSuccess: (I) -> O,
     onFailure: (Throwable) -> O
 ): O {
@@ -143,7 +143,7 @@ inline fun <reified I, O> Seal<I>.fold(
 /**
  * Shorthand for keeping value in [Seal] the same but having default value when things go wrong.
  * */
-inline fun <reified I> Seal<I>.onFailureReturn(body: (Throwable) -> I): I = fold(
+inline fun <I> Seal<I>.onFailureReturn(body: (Throwable) -> I): I = fold(
     onSuccess = { it },
     onFailure = body
 )
@@ -153,13 +153,13 @@ inline fun <reified I> Seal<I>.onFailureReturn(body: (Throwable) -> I): I = fold
  *
  * @see [onFailureReturn]
  * */
-inline fun <reified I> Seal<I>.onFailureReturn(default: I): I = onFailureReturn { default }
+inline fun <I> Seal<I>.onFailureReturn(default: I): I = onFailureReturn { default }
 
 
 /**
  * Invokes [body] only and only if the [Seal] contains a value - is a success
  * */
-inline fun <reified I> Seal<I>.onSuccess(body: (I) -> Unit): Seal<I> = apply {
+inline fun <I> Seal<I>.onSuccess(body: (I) -> Unit): Seal<I> = apply {
     when {
         isSuccess -> body(getOrThrow())
     }
