@@ -6,6 +6,6 @@ dependencies {
 
     debugImplementation(project(":talisman-seal"))
 
-    releaseImplementation("com.skoumal.grimoire:talisman-seal:${publicationVersionName}")
+    releaseImplementation("com.skoumal.grimoire:talisman-seal:${getProperty("version")}")
 
 }
