@@ -3,6 +3,9 @@ package com.skoumal.grimoire.talisman
 import android.util.Log
 import com.skoumal.grimoire.talisman.seal.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 
@@ -49,12 +52,38 @@ abstract class AbstractUseCase<In, Out> : UseCase<In, Out> {
      * @see onFailureLog
      * */
     final override suspend fun invoke(input: In): Seal<Out> {
-        return backing.transform(input).onFailureLog()
+        return backing.transform(input).onFailureLog().onSuccess {
+            if (!channel.offer(it)) {
+                logInternal(
+                    this@AbstractUseCase::class.java.simpleName,
+                    "[ERROR] - internal use-case's channel cannot accept any values"
+                )
+            }
+        }
     }
+
+    private val channel = getDefaultChannel()
+
+    /**
+     * By default, observe outputs an internal channel with up to one previous value. Channel is
+     * automatically updated with new values as [invoke] is called.
+     *
+     * Causing channel failure is your responsibility and doing so will inevitably corrupt the
+     * feature and may cause crashes. Channel does not close automatically and therefore is opened
+     * for the duration of this class' lifespan.
+     *
+     * You can override this method and replace the functionality with Flows from Room (database)
+     * or entirely different approach - such as repeated polling of an endpoint and such.
+     * */
+    override fun observe(input: In): Flow<Out> {
+        return channel.consumeAsFlow()
+    }
+
+    private fun getDefaultChannel() = Channel<Out>(Channel.CONFLATED)
 
     /**
      * On any failure that [backing] or [run] has produced runs [Seal.onFailure] method to check
-     * whether it can log the failure. If so, then the throwable is logged via [Warning][Log.w].
+     * whether it can log the failure. If so, then the throwable is logged via [println][println].
      *
      * This function can be reimplemented to pass throwable through Timber for an instance.
      * This cannot be recommended and you should refrain from doing so, otherwise you can
@@ -65,7 +94,20 @@ abstract class AbstractUseCase<In, Out> : UseCase<In, Out> {
         if (!logErrors) {
             return@onFailure
         }
-        Log.w(this@AbstractUseCase::class.java.simpleName, it)
+
+        logInternal(this@AbstractUseCase::class.java.simpleName, it)
+    }
+
+    private fun logInternal(tag: String, throwable: Throwable) =
+        logInternal(tag, throwable.stackTraceToString())
+
+    private fun logInternal(tag: String, message: String) {
+        val printable = StringBuilder(tag)
+            .appendLine()
+            .append(message)
+            .toString()
+
+        println(printable)
     }
 
 
