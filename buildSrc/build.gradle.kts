@@ -32,11 +32,3 @@ gradlePlugin {
         }
     }
 }
-
-subprojects {
-    tasks.registering(Jar::class) {
-        from(sourceSets["main"].allSource)
-    }
-
-    //configure<BaseExtension> {}
-}
