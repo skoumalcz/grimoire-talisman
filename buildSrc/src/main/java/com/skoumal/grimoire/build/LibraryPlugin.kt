@@ -1,7 +1,7 @@
 package com.skoumal.grimoire.build
 
+import com.skoumal.grimoire.cover.android.AndroidConfigurationOptions
 import com.skoumal.grimoire.cover.android.AndroidLibraryFactory
-import com.skoumal.grimoire.cover.android.applyJavaVersion
 import com.skoumal.grimoire.cover.gradle.parentExtra
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
@@ -32,9 +32,20 @@ class LibraryPlugin : Plugin<Project> {
 
         target.afterEvaluate {
             LibraryPublishing(target)
+                .addJavadocTask()
                 .applyPublication()
                 .applyBintrayOnPublication()
         }
     }
 
+}
+
+fun <Config : AndroidConfigurationOptions> Config.applyJavaVersion(version: JavaVersion) = apply {
+    compileOptions {
+        sourceCompatibility = version
+        targetCompatibility = version
+    }
+    kotlinOptions {
+        jvmTarget = version.toString()
+    }
 }

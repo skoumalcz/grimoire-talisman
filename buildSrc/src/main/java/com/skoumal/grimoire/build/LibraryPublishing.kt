@@ -1,10 +1,14 @@
 package com.skoumal.grimoire.build
 
+import com.android.build.gradle.BaseExtension
 import com.jfrog.bintray.gradle.BintrayExtension
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
 import org.gradle.api.publish.internal.DefaultPublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.api.tasks.javadoc.Javadoc
+import org.gradle.jvm.tasks.Jar
+import org.gradle.kotlin.dsl.*
 
 class LibraryPublishing(
     private val project: Project,
@@ -13,6 +17,25 @@ class LibraryPublishing(
     private val bintray: BintrayExtension =
         project.extensions.findByName("bintray") as BintrayExtension
 ) {
+
+    private lateinit var androidJavadocJar: Jar
+    private lateinit var androidSourcesJar: Jar
+
+    fun addJavadocTask() = apply {
+        project.configure<BaseExtension> {
+            val androidJavadoc = project.task("androidJavadoc", Javadoc::class) {
+                source = sourceSets["main"].java.getSourceFiles()
+            }
+            androidJavadocJar = project.task("androidJavadocJar", Jar::class) {
+                archiveClassifier.set("javadoc")
+                from(androidJavadoc.destinationDir)
+            }
+            androidSourcesJar = project.task("androidSourcesJar", Jar::class) {
+                archiveClassifier.set("sources")
+                from(sourceSets["main"].java.getSourceFiles())
+            }
+        }
+    }
 
     /**
      * @param groupId example: `com.skoumal.grimoire`
@@ -31,6 +54,9 @@ class LibraryPublishing(
         publishing.publications {
             create(publicationName, MavenPublication::class.java).apply {
                 from(project.components.findByName("release"))
+
+                artifact(androidJavadocJar)
+                artifact(androidSourcesJar)
 
                 groupId = project.getStringProperty("groupId")
                 artifactId = project.name
