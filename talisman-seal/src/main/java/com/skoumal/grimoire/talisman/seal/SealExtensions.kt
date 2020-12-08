@@ -23,7 +23,9 @@ inline fun <T, R : Any?> T.letSealed(body: (T) -> R): Seal<R> = try {
  * Returns value stored in [Seal] only if it's a success, otherwise throws the exception stored
  * within according to [throwableOrThrow].
  * */
+@Suppress("NOTHING_TO_INLINE")
 inline fun <T> Seal<T>.getOrThrow(): T {
+    @Suppress("UNCHECKED_CAST")
     return when {
         isSuccess -> getOrNull() as T
         else -> throw throwableOrThrow()
@@ -153,6 +155,7 @@ inline fun <I> Seal<I>.onFailureReturn(body: (Throwable) -> I): I = fold(
  *
  * @see [onFailureReturn]
  * */
+@Suppress("NOTHING_TO_INLINE")
 inline fun <I> Seal<I>.onFailureReturn(default: I): I = onFailureReturn { default }
 
 
