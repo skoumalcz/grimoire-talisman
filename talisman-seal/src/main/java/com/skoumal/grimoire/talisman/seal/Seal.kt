@@ -1,6 +1,6 @@
 package com.skoumal.grimoire.talisman.seal
 
-inline class Seal<out T : Any?>(
+class Seal<out T : Any?>(
     private val value: Any?
 ) {
 
