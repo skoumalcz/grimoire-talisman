@@ -6,6 +6,7 @@ import com.skoumal.grimoire.cover.gradle.parentExtra
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.provideDelegate
 
 class LibraryPlugin : Plugin<Project> {
@@ -29,6 +30,14 @@ class LibraryPlugin : Plugin<Project> {
             .setTargetSdk(30)
             .setMinSdk(21)
             .applyJavaVersion(JavaVersion.VERSION_1_8)
+            .useExtension {
+                it.buildTypes {
+                    getByName("release") {
+                        isShrinkResources = false
+                        minifyEnabled(false)
+                    }
+                }
+            }
 
         target.afterEvaluate {
             LibraryPublishing(target)
