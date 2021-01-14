@@ -51,11 +51,11 @@ inline fun <In, Out> UseCaseOrchestrator(
  * orchestrator is returned. In the other case [switching] is the orchestrator of choice.
  * */
 fun <In, Out> UseCaseOrchestrator.Companion.fast(
-    context: CoroutineContext,
-    useCase: UseCase<In, Out>
+    useCase: UseCase<In, Out>,
+    context: CoroutineContext
 ) = when (context) {
     Dispatchers.Unconfined -> simple(useCase)
-    else -> switching(context, useCase)
+    else -> switching(useCase, context)
 }
 
 /**
@@ -72,8 +72,8 @@ fun <In, Out> UseCaseOrchestrator.Companion.simple(
  * the use case and wrapping the result with [Seal].
  * */
 fun <In, Out> UseCaseOrchestrator.Companion.switching(
-    context: CoroutineContext = Dispatchers.Default,
-    useCase: UseCase<In, Out>
+    useCase: UseCase<In, Out>,
+    context: CoroutineContext = Dispatchers.Default
 ) = UseCaseOrchestrator<In, Out> {
     withContext(context) { runSealed { useCase.use(it) } }
 }
@@ -91,10 +91,10 @@ fun <In, Out> UseCaseOrchestrator.Companion.switching(
  * switching will be bypassed and execution will be less expensive.
  * */
 fun <In> UseCaseOrchestrator.Companion.racing(
-    context: CoroutineContext = Dispatchers.Default,
-    useCase: UseCase<In, Unit>
+    useCase: UseCase<In, Unit>,
+    context: CoroutineContext = Dispatchers.Default
 ) = UseCaseOrchestrator<Iterable<In>, Unit> { inputs ->
-    val orchestrator = fast(context, useCase)
+    val orchestrator = fast(useCase, context)
     val results = inputs.map { input ->
         coroutineScope {
             async(context = context) {

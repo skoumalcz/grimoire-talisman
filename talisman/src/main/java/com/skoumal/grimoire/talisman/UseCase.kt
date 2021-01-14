@@ -28,10 +28,10 @@ interface UseCase<In : Any?, Out : Any?> {
  * @see fast
  * */
 suspend operator fun <In, Out> UseCase<In, Out>.invoke(
-    context: CoroutineContext = Dispatchers.Default,
-    input: In
+    input: In,
+    context: CoroutineContext = Dispatchers.Default
 ): Seal<Out> = UseCaseOrchestrator
-    .fast(context, this)
+    .fast(this, context)
     .invoke(input)
 
 /**
@@ -41,7 +41,7 @@ suspend operator fun <In, Out> UseCase<In, Out>.invoke(
 suspend operator fun <Out> UseCase<Unit, Out>.invoke(
     context: CoroutineContext = Dispatchers.Default
 ): Seal<Out> = UseCaseOrchestrator
-    .fast(context, this)
+    .fast(this, context)
     .invoke(Unit)
 
 /**
@@ -49,8 +49,8 @@ suspend operator fun <Out> UseCase<Unit, Out>.invoke(
  * @see racing
  * */
 suspend operator fun <In> UseCase<In, Unit>.invoke(
-    context: CoroutineContext = Dispatchers.Default,
-    input: Iterable<In>
+    input: Iterable<In>,
+    context: CoroutineContext = Dispatchers.Default
 ): Seal<Unit> = UseCaseOrchestrator
-    .racing(context, this)
+    .racing(this, context)
     .invoke(input)
