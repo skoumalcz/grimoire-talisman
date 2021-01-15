@@ -108,23 +108,35 @@ inline fun <I, O> Seal<I>.flatMapSealed(body: (I) -> Seal<O>): Seal<O> {
  *
  * Exceptions thrown while performing the [body] are not caught and propagate upstream immediately.
  * */
-inline fun <I, O> Seal<Iterable<I>>.listMap(body: (I) -> O): Seal<Iterable<O>> {
+inline fun <I, O> Seal<Iterable<I>>.listMap(body: (I) -> O): Seal<Collection<O>> {
     @Suppress("UNCHECKED_CAST")
     return when {
         isSuccess -> Seal.success(getOrThrow().map(body))
-        else -> this as Seal<Iterable<O>>
+        else -> this as Seal<Collection<O>>
     }
 }
 
 /**
  * In functionality similar to [listMap] however catches any exceptions that occur when executing
- * [body]. If exception occurs during mapping **any** object in the [Iterable] the whole [Seal]
+ * [body]. If exception occurs during mapping **any** object in the [Collection] the whole [Seal]
  * is considered a failure and mapping will not be completed.
  * */
-inline fun <I, O> Seal<Iterable<I>>.listMapSealed(body: (I) -> O): Seal<Iterable<O>> {
+inline fun <I, O> Seal<Iterable<I>>.listMapSealed(body: (I) -> O): Seal<Collection<O>> {
     return flatMapSealed { listMap(body) }
 }
 
+/**
+ * Takes list of all jobs and transforms it to a [Seal] of the result values. It will return full
+ * list only and only when a list contains no errors. Otherwise first error in the list will be
+ * returned back as the seal.
+ *
+ * This is a destructive, generalized operation. Consider iterating through every single result if
+ * you need all the exceptions.
+ * */
+@Suppress("NOTHING_TO_INLINE")
+inline fun <I> Collection<Seal<I>>.flatten(): Seal<List<I>> {
+    return runSealed { map { it.getOrThrow() } }
+}
 
 /**
  * Offers convenience functions to help with fetching the final value from [Seal]. Only one of

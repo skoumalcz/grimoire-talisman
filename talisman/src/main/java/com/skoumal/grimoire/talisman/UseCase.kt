@@ -2,6 +2,7 @@ package com.skoumal.grimoire.talisman
 
 import com.skoumal.grimoire.talisman.seal.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlin.coroutines.CoroutineContext
 
 interface UseCase<In : Any?, Out : Any?> {
@@ -25,13 +26,13 @@ interface UseCase<In : Any?, Out : Any?> {
 
 /**
  * Launches a fast orchestrator on top of the provided data.
- * @see fast
+ * @see switching
  * */
 suspend operator fun <In, Out> UseCase<In, Out>.invoke(
     input: In,
     context: CoroutineContext = Dispatchers.Default
 ): Seal<Out> = UseCaseOrchestrator
-    .fast(this, context)
+    .switching(this, context)
     .invoke(input)
 
 /**
@@ -41,16 +42,18 @@ suspend operator fun <In, Out> UseCase<In, Out>.invoke(
 suspend operator fun <Out> UseCase<Unit, Out>.invoke(
     context: CoroutineContext = Dispatchers.Default
 ): Seal<Out> = UseCaseOrchestrator
-    .fast(this, context)
+    .switching(this, context)
     .invoke(Unit)
 
 /**
  * Launches a racing orchestrator on top of the provided data.
  * @see racing
  * */
-suspend operator fun <In> UseCase<In, Unit>.invoke(
+suspend operator fun <In, Out> UseCase<In, Out>.invoke(
     input: Iterable<In>,
     context: CoroutineContext = Dispatchers.Default
-): Seal<Unit> = UseCaseOrchestrator
-    .racing(this, context)
-    .invoke(input)
+): Seal<Iterable<Out>> = coroutineScope {
+    UseCaseOrchestrator
+        .racing(useCase = this@invoke, context = context, scope = this)
+        .invoke(input)
+}

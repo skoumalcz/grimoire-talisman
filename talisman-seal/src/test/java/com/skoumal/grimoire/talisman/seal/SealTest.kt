@@ -134,7 +134,8 @@ class SealTest {
         val seal = Seal.failure<Int>(throwable)
         val result = seal.mapSealed<Int, Byte> { throw thrown }
 
-        assertThat(seal).isNotSameInstanceAs(result)
+        // recycles the same instance for efficiency (starts as failure, is only cast to other result)
+        assertThat(seal).isSameInstanceAs(result)
         assertThat(seal).isEqualTo(result)
         assertThat(seal.throwableOrNull()).isSameInstanceAs(throwable)
     }
@@ -145,7 +146,8 @@ class SealTest {
         val seal = Seal.success(nextInt())
         val result = seal.flatMap { mappedValue }
 
-        assertThat(result).isNotSameInstanceAs(mappedValue)
+        // the unwrapping shouldn't be done at this point to improve efficiency
+        assertThat(result).isSameInstanceAs(mappedValue)
         assertThat(result).isEqualTo(mappedValue)
     }
 
@@ -155,7 +157,8 @@ class SealTest {
         val seal = Seal.failure<Int>(NotImplementedError())
         val result = seal.flatMap<Int, Byte> { throw mappedValue }
 
-        assertThat(result).isNotSameInstanceAs(seal)
+        // recycles the same instance for efficiency (starts as failure, is only cast to other result)
+        assertThat(result).isSameInstanceAs(seal)
         assertThat(result).isEqualTo(seal)
         assertThat(result.throwableOrNull()).isNotEqualTo(mappedValue)
     }
@@ -177,9 +180,34 @@ class SealTest {
         val seal = Seal.failure<Int>(NotImplementedError())
         val result = seal.flatMapSealed<Int, Byte> { throw mappedValue }
 
-        assertThat(result).isNotSameInstanceAs(seal)
-        assertThat(result).isEqualTo(result)
+        // recycles the same instance for efficiency (starts as failure, is only cast to other result)
+        assertThat(result).isSameInstanceAs(seal)
         assertThat(result.throwableOrNull()).isNotEqualTo(mappedValue)
+    }
+
+    @Test
+    fun `flatten returns first throwable`() {
+        val mappedValue = IllegalArgumentException()
+        val seals = listOf(
+            Seal.success(1),
+            Seal.failure(mappedValue),
+            Seal.failure(NotImplementedError()),
+        )
+        val result = seals.flatten()
+
+        assertThat(result.throwableOrNull()).isEqualTo(mappedValue)
+    }
+
+    @Test
+    fun `flatten returns list without throwables`() {
+        val seals = listOf(
+            Seal.success(1),
+            Seal.success(2),
+            Seal.success(3),
+        )
+        val result = seals.flatten()
+
+        assertThat(result.getOrNull()).containsExactly(1, 2, 3)
     }
 
     @Test
@@ -198,7 +226,8 @@ class SealTest {
         val seal = Seal.failure<List<Int>>(NotImplementedError())
         val result = seal.listMap<Int, Byte> { throw mappedValue }
 
-        assertThat(result).isNotSameInstanceAs(seal)
+        // recycles the same instance for efficiency (starts as failure, is only cast to other result)
+        assertThat(result).isSameInstanceAs(seal)
         assertThat(result).isEqualTo(seal)
         assertThat(result.throwableOrNull()).isNotEqualTo(mappedValue)
     }
@@ -220,7 +249,8 @@ class SealTest {
         val seal = Seal.failure<List<Int>>(NotImplementedError())
         val result = seal.listMapSealed<Int, Byte> { throw mappedValue }
 
-        assertThat(result).isNotSameInstanceAs(seal)
+        // recycles the same instance for efficiency (starts as failure, is only cast to other result)
+        assertThat(result).isSameInstanceAs(seal)
         assertThat(result).isEqualTo(result)
         assertThat(result.throwableOrNull()).isNotEqualTo(mappedValue)
     }
