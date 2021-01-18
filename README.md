@@ -162,4 +162,36 @@ runBlocking {
 > Once again, notice calling `.observe()` on the UseCase. This is mainly to bypass the annoying
 `Unit` in parameters.
 
+### `Seal`
+
+Seal is in functionality almost indistinguishable from `kotlin.Result`. That is, without using
+inline classes. With inline classes still being in EAP or Opt-in programs, you cannot return them
+as method results and many other issues.
+
+```kotlin
+// start with
+runSealed {}
+
+// or
+val seal = letSealed { listOf() }
+
+// transform values
+seal.map {}
+seal.mapSealed {}
+seal.flatMap {}
+seal.listMap {}
+// … and many more operators
+
+// and finally get the data output
+seal.getOrThrow()
+seal.getOrNull()
+seal.throwableOrNull()
+seal.throwableOrThrow()
+
+seal.onSuccess {}
+seal.onFailure {}
+seal.onFailureReturn(Unit)
+seal.fold({}, {})
+```
+
 Logo by <a href="https://www.flaticon.com/authors/smalllikeart" title="smalllikeart">smalllikeart</a>
