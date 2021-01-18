@@ -132,4 +132,34 @@ runBlocking {
 UseCase is immediately callable with named params without the need to initialize the `Input` class
 explicitly.
 
+### `UseCaseFlow`
+
+Another simple interface allowing you to observe the same data that your UseCase already provides.
+Consider this example with Room database library.
+
+```kotlin
+class SumAllWages(
+    private val dao: WagesDao
+) : UseCase<Unit, Double>, UseCaseFlow<Unit, Double> {
+
+    override suspend fun use(input: Unit): Double {
+        return dao.wagesSum()
+    }
+
+    override fun flow(input: Unit): Flow<Double> {
+        return dao.observeWagesSum()
+    }
+
+}
+
+runBlocking {
+    val uc = SumAllWages(provideDao())
+    val currentValue: Double = uc().getOrThrow()
+    val flow: Flow<Double> = uc.observe()
+}
+```
+
+> Once again, notice calling `.observe()` on the UseCase. This is mainly to bypass the annoying
+`Unit` in parameters.
+
 Logo by <a href="https://www.flaticon.com/authors/smalllikeart" title="smalllikeart">smalllikeart</a>
