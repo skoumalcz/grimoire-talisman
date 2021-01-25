@@ -1,6 +1,7 @@
 package com.skoumal.grimoire.talisman
 
 import kotlinx.coroutines.flow.Flow
+import kotlin.reflect.KProperty
 
 interface UseCaseFlow<In : Any?, Out : Any?> {
 
@@ -32,3 +33,10 @@ fun <Out> UseCaseFlow<Unit, Out>.observe() = flow
  * */
 val <Out> UseCaseFlow<Unit, Out>.flow
     get() = observe(Unit)
+
+/**
+ * Provides a delegated value to the receiver.
+ * */
+operator fun <Out> UseCaseFlow<Unit, Out>.getValue(any: Any, prop: KProperty<*>): Flow<Out> {
+    return observe()
+}
