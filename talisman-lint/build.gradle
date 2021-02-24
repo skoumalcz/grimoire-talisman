@@ -1,0 +1,16 @@
+plugins {
+    id 'java-library'
+    id 'kotlin'
+}
+
+dependencies {
+    def androidTools = "27.1.2"
+    compileOnly "com.android.tools.lint:lint-api:$androidTools"
+    compileOnly "com.android.tools.lint:lint-checks:$androidTools"
+}
+
+jar {
+    manifest {
+        attributes('Lint-Registry-v2': 'com.skoumal.grimoire.talisman.lint.TalismanIssueRegistry')
+    }
+}

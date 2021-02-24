@@ -1,3 +1,4 @@
+include ':talisman-lint'
 include ':talisman-seal'
 include ':talisman'
 rootProject.name = "grimoire-talisman"
