@@ -40,3 +40,10 @@ val <Out> UseCaseFlow<Unit, Out>.flow
 operator fun <Out> UseCaseFlow<Unit, Out>.getValue(any: Any, prop: KProperty<*>): Flow<Out> {
     return observe()
 }
+
+/**
+ * Provides a delegated value to the receiver.
+ * */
+operator fun <Out> UseCaseFlow<Unit, Out>.getValue(any: Nothing?, prop: KProperty<*>): Flow<Out> {
+    return observe()
+}
