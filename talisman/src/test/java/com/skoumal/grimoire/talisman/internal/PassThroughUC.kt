@@ -1,5 +1,6 @@
-package com.skoumal.grimoire.talisman
+package com.skoumal.grimoire.talisman.internal
 
+import com.skoumal.grimoire.talisman.UseCase
 import kotlinx.coroutines.delay
 import kotlin.random.Random.Default.nextLong
 

@@ -1,4 +1,6 @@
-package com.skoumal.grimoire.talisman
+package com.skoumal.grimoire.talisman.internal
+
+import com.skoumal.grimoire.talisman.UseCase
 
 class UnitOutputUC(
     private val body: suspend (Int) -> Unit = {}

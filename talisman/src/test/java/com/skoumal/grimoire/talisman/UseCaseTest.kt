@@ -1,6 +1,8 @@
 package com.skoumal.grimoire.talisman
 
 import com.google.common.truth.Truth.assertThat
+import com.skoumal.grimoire.talisman.internal.UnitInputUC
+import com.skoumal.grimoire.talisman.internal.UnitOutputUC
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
@@ -13,7 +15,7 @@ import kotlin.coroutines.coroutineContext
 import kotlin.random.Random.Default.nextInt
 
 @Suppress("EXPERIMENTAL_API_USAGE")
-class BasicUseCaseTest {
+class UseCaseTest {
 
     private val mainThreadSurrogate = newSingleThreadContext("UI thread")
 

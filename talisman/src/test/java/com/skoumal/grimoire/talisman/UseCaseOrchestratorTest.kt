@@ -1,6 +1,8 @@
 package com.skoumal.grimoire.talisman
 
 import com.google.common.truth.Truth.assertThat
+import com.skoumal.grimoire.talisman.internal.PassThroughUC
+import com.skoumal.grimoire.talisman.internal.UnitOutputUC
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
