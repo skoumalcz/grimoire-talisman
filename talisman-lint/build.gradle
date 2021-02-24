@@ -7,6 +7,7 @@ dependencies {
     def androidTools = "27.1.2"
     compileOnly "com.android.tools.lint:lint-api:$androidTools"
     compileOnly "com.android.tools.lint:lint-checks:$androidTools"
+    compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
 }
 
 jar {
