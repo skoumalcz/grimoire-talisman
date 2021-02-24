@@ -6,7 +6,6 @@ import com.skoumal.grimoire.cover.gradle.parentExtra
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.provideDelegate
 
 class LibraryPlugin : Plugin<Project> {
@@ -18,7 +17,6 @@ class LibraryPlugin : Plugin<Project> {
         val options = AndroidLibraryFactory(target)
             .applyAndroid()
             .applyKotlin()
-            .applyPublishing()
             .applyKotlinDependencies(kotlinVersion)
             .applyCoroutineDependencies(coroutinesVersion)
             .applyTestDependencies()
@@ -38,13 +36,6 @@ class LibraryPlugin : Plugin<Project> {
                     }
                 }
             }
-
-        target.afterEvaluate {
-            LibraryPublishing(target)
-                .addJavadocTask()
-                .applyPublication()
-                .applyBintrayOnPublication()
-        }
     }
 
 }
