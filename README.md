@@ -162,6 +162,35 @@ runBlocking {
 > Once again, notice calling `.observe()` on the UseCase. This is mainly to bypass the annoying
 `Unit` in parameters.
 
+### `UseCaseSimple`
+
+Allows for a elementary synchronous reusable logic with input and output. It's created in order to
+allow delegation through native class and method properties.
+
+```kotlin
+import com.skoumal.grimoire.talisman.UseCaseSimple
+import com.skoumal.grimoire.talisman.getValue
+import com.skoumal.grimoire.talisman.setValue
+
+class NetworkTokenPreference : UseCaseSimple<String, String> {
+
+    override fun getValue(): String {
+        return TODO("get a preference value")
+    }
+
+    override fun setValue(input: String) {
+        TODO("set a preference value")
+    }
+
+}
+
+class ViewModel(preference: NetworkTokenPreference) {
+
+    var networkToken: String by preference
+
+}
+```
+
 ### `Seal`
 
 Seal is in functionality almost indistinguishable from `kotlin.Result`. That is, without using

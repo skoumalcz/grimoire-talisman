@@ -9,7 +9,7 @@ class UseCaseSimpleTest {
     @Test
     fun `writing to keeping value updates input`() {
         val initial = nextInt()
-        val uc = TestUC() with initial
+        val uc = TestUC(initial)
         var delegated by uc
 
         val nextInput = nextInt()
@@ -22,7 +22,7 @@ class UseCaseSimpleTest {
     @Test
     fun `initialInput is lastInput`() {
         val initial = nextInt()
-        val uc = TestUC().with(initial)
+        val uc = TestUC(initial)
         val delegated by uc
 
         assertThat(delegated).isEqualTo(initial)
@@ -32,10 +32,10 @@ class UseCaseSimpleTest {
     @Test
     fun `use is called every time getter is called`() {
         var called = false
-        val uc = TestUC {
+        val uc = TestUC(0) {
             called = true
             it
-        } with 0
+        }
         val delegated by uc
 
         assertThat(called).isFalse()
@@ -49,11 +49,21 @@ class UseCaseSimpleTest {
     }
 
     private class TestUC(
+        defaultValue: Int = 0,
         private val use: (Int) -> Int = { it }
     ) : UseCaseSimple<Int, Int> {
-        override fun use(input: Int): Int {
-            return use.invoke(input)
+
+        @Volatile
+        var lastInput = defaultValue
+
+        override fun getValue(): Int {
+            return use(lastInput)
         }
+
+        override fun setValue(input: Int) {
+            lastInput = input
+        }
+
     }
 
 }
